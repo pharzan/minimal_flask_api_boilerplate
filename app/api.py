@@ -32,18 +32,20 @@ class User(Resource):
         if not self.user_exists(name):
             result = self.db.execute(queries.create_user(name,password))
             return "user created"
-        
+
         return "user exits"
 
     def put(self, name=None):
-        """ update user information """
+        """ update user password """
 
         payload = request.get_json()
         name = payload['name']
         password = payload['password']
-        result = self.db.execute(queries.update_user(name,password))
-        print(result)
-        return "user updated"
+
+        if self.user_exists(name):
+            result = self.db.execute(queries.update_user(name,password))
+            return "user updated"
+        return "user doesn't exist"
 
 
 class my_app:
@@ -53,5 +55,3 @@ class my_app:
         self.api = Api(self.app)
         db_filename = variables.db_filename
         self.db = DB(db_filename, queries.users_table)
-        # return self.app,self.api
-
