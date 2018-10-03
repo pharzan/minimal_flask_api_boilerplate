@@ -12,25 +12,38 @@ import queries
 class User(Resource):
     def __init__(self):
         my_app.__init__(self)
+    
+    def user_exists(self,name):
+        """ check if user exists """
+        return len(self.db.execute(queries.get_user(name))) > 1
 
     def get(self, name):
         """ get user information """
+
         user_info = self.db.execute(queries.get_user(name))
         return user_info
     
     def post(self, name=None):
         """ create user """
+
         payload = request.get_json()
         name = payload['name']
         password = payload['password']
-        result = self.db.execute(queries.create_user(name,password))
+        if not self.user_exists(name):
+            result = self.db.execute(queries.create_user(name,password))
+            return "user created"
+        
+        return "user exits"
 
-        print(name,password,result)
-        return ""
-
-    def update(self, name):
+    def put(self, name=None):
         """ update user information """
-        pass
+
+        payload = request.get_json()
+        name = payload['name']
+        password = payload['password']
+        result = self.db.execute(queries.update_user(name,password))
+        print(result)
+        return "user updated"
 
 
 class my_app:
