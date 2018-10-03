@@ -1,11 +1,14 @@
-from app.api import create_app
+from app.api import my_app
 from app.api import User
 
 
-app,api = create_app()
+app_instance = my_app()
 
-api.add_resource(User, '/api/user/<string:name>')
-
+# app_instance.api.add_resource(User, '/api/user', defaults={'name': ''})
+# app_instance.api.add_resource(User, '/api/user/<string:name>')
+app_instance.api.add_resource(User, '/api/user',
+                 '/api/user/<string:name>', 
+                 endpoint='user')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app_instance.app.run(debug=True, host='127.0.0.1', port=5000)
