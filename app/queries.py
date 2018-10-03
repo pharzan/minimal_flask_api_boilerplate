@@ -18,3 +18,6 @@ def create_user(username,password):
 
 def update_user(username, password):
     return """ UPDATE USERS SET PASSWORD = "{0}" WHERE USERNAME = "{1}" """.format(password, username)
+
+def check_password(password):
+    return """ SELECT * FROM USERS WHERE password = "{0}" """.format(password)

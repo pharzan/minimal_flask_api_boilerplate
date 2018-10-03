@@ -47,6 +47,27 @@ class User(Resource):
             return "user updated"
         return "user doesn't exist"
 
+class Login(Resource):
+    def __init__(self):
+        my_app.__init__(self)
+
+    def user_exists(self, name):
+        """ check if user exists """
+        return len(self.db.execute(queries.get_user(name))) > 1
+    
+    def check_password(self, password):
+        """ check if password is correct """
+        return len(self.db.execute(queries.check_password(password))) > 1
+
+    def post(self):
+        payload = request.get_json()
+        name = payload['name']
+        password = payload['password']
+        if self.user_exists(name):
+            if self.check_password(password):
+                return "logged in"
+
+        return "access denied"
 
 class my_app:
     def __init__(self,config={}):
