@@ -3,6 +3,10 @@ from flask import Flask, render_template, request
 from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
 from flask import jsonify
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity, get_jwt_claims, jwt_optional
+)
 
 from db import DB
 import variables
@@ -47,7 +51,7 @@ class User(Resource):
             return "user updated"
         return "user doesn't exist"
 
-class Login(Resource):
+class Auth(Resource):
     def __init__(self):
         my_app.__init__(self)
 
@@ -61,8 +65,19 @@ class Login(Resource):
 
     def update_token(self, name):
         """ update users table with a random token """
-        auth_token = "01234567890"
+
+        auth_token = create_access_token(identity=name)
         self.db.execute(queries.update_token(name,auth_token))
+        return self.db.execute(queries.get_token(name))
+
+    @jwt_required
+    def get(self):
+        """ 
+            is authorized test 
+            the header must contain Authorization: Bearer AUTH_TOKEN
+        """
+        return "access granted"
+
 
     def post(self):
         payload = request.get_json()
@@ -70,8 +85,10 @@ class Login(Resource):
         password = payload['password']
         if self.user_exists(name):
             if self.check_password(password):
-                self.update_token(name)
-                return "logged in"
+                token = self.update_token(name)[0][0]
+                
+                return jsonify({"token": token})
+                
 
         return "user or pass not correct"
 
@@ -80,5 +97,7 @@ class my_app:
         self.app = Flask(__name__, static_folder="../static",
                     template_folder="./templates/")
         self.api = Api(self.app)
+        self.jwt = JWTManager(self.app)
+        self.app.config['JWT_SECRET_KEY'] = variables.JWT_SECRET
         db_filename = variables.db_filename
         self.db = DB(db_filename, queries.users_table)

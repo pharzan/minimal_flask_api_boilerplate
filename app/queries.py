@@ -24,5 +24,10 @@ def check_password(password):
     return """ SELECT * FROM USERS WHERE password = "{0}" """.format(password)
 
 def update_token(username, token):
-    print(token,username)
     return """ UPDATE USERS SET AUTH_TOKEN = "{0}" WHERE USERNAME = "{1}" """.format(token, username)
+
+def get_token(username):
+    return """ SELECT AUTH_TOKEN FROM USERS WHERE USERNAME = "{0}" """.format(username)
+    
+
+    
