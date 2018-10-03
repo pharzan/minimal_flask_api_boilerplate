@@ -9,6 +9,10 @@ import variables
 import queries
 
 
+class User(Resource):
+    def get(self, name):
+        return "hello"
+    
 
 
 
@@ -18,4 +22,5 @@ def create_app(config={}):
     api = Api(app)
     db_filename = variables.db_filename
     db = DB(db_filename, queries.users_table)
-    return app
+    return app,api
+
