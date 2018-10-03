@@ -15,7 +15,7 @@ class User(Resource):
     
     def user_exists(self,name):
         """ check if user exists """
-        return len(self.db.execute(queries.get_user(name))) > 1
+        return len(self.db.execute(queries.get_user(name))) > 0
 
     def get(self, name):
         """ get user information """
@@ -53,11 +53,16 @@ class Login(Resource):
 
     def user_exists(self, name):
         """ check if user exists """
-        return len(self.db.execute(queries.get_user(name))) > 1
+        return len(self.db.execute(queries.get_user(name))) > 0
     
     def check_password(self, password):
         """ check if password is correct """
-        return len(self.db.execute(queries.check_password(password))) > 1
+        return len(self.db.execute(queries.check_password(password))) > 0
+
+    def update_token(self, name):
+        """ update users table with a random token """
+        auth_token = "01234567890"
+        self.db.execute(queries.update_token(name,auth_token))
 
     def post(self):
         payload = request.get_json()
@@ -65,9 +70,10 @@ class Login(Resource):
         password = payload['password']
         if self.user_exists(name):
             if self.check_password(password):
+                self.update_token(name)
                 return "logged in"
 
-        return "access denied"
+        return "user or pass not correct"
 
 class my_app:
     def __init__(self,config={}):

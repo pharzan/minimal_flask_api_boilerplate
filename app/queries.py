@@ -3,6 +3,7 @@ users_table = """
             USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
             USERNAME  TEXT    NOT NULL,
             PASSWORD TEXT NOT NULL,
+            AUTH_TOKEN TEXT DEFAULT "",
             CREATEDAT  TIMESTAMP DEFAULT (strftime('%s', 'now')),
             ISACTIVE BOOLEAN DEFAULT 1
             );
@@ -21,3 +22,7 @@ def update_user(username, password):
 
 def check_password(password):
     return """ SELECT * FROM USERS WHERE password = "{0}" """.format(password)
+
+def update_token(username, token):
+    print(token,username)
+    return """ UPDATE USERS SET AUTH_TOKEN = "{0}" WHERE USERNAME = "{1}" """.format(token, username)
