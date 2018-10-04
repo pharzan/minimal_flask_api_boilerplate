@@ -1,8 +1,8 @@
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
-from flask import jsonify
+
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity, get_jwt_claims, jwt_optional
